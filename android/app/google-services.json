@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "997833412775",
+    "project_id": "babynames-32cb0",
+    "storage_bucket": "babynames-32cb0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:997833412775:android:c2a47885ace8f8f42e8b82",
+        "android_client_info": {
+          "package_name": "com.example.flutterfire_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "997833412775-uo27s26komkqg8f1acddeuq6sknkamqd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAFGqjePr_7ENJtIdnO-WMClIBIcA2Z9v8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "997833412775-uo27s26komkqg8f1acddeuq6sknkamqd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
