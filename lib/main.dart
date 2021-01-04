@@ -2,13 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+
+import 'package:flutter/scheduler.dart';
 import 'package:sensors/sensors.dart';
-import 'package:condition/condition.dart';
-import "dart:async";
+
 
 // enum WidgetMarker { graph, stats, info }
 //
@@ -250,19 +248,23 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     if (x >= 9.00) {
       setState(() {
-        Navigator.push(
-            context,
-            new MaterialPageRoute(
-                builder: (BuildContext context) => new CorrectScreen()));
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          Navigator.push(
+              context,
+              new MaterialPageRoute(
+                  builder: (BuildContext context) => new CorrectScreen()));
+        });
       });
     }
 
-    if (x <= 0.00) {
+    if (x <= -5.00) {
       setState(() {
-        Navigator.push(
-            context,
-            new MaterialPageRoute(
-                builder: (BuildContext context) => new passedScreen()));
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          Navigator.push(
+              context,
+              new MaterialPageRoute(
+                  builder: (BuildContext context) => new passedScreen()));
+        });
       });
     }
     return Scaffold(
@@ -349,28 +351,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class CorrectScreen extends StatefulWidget {
-  @override
-  _CorrectScreenPageState createState() => _CorrectScreenPageState();
-}
-
-class _CorrectScreenPageState extends State<CorrectScreen> {
-  double x;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    accelerometerEvents.listen((AccelerometerEvent event) {
-      setState(() {
-        // x = num.parse(event.x.toStringAsFixed(2));
-        // y = num.parse(event.y.toStringAsFixed(2));
-        // z = num.parse(event.z.toStringAsFixed(2));
-        x = event.x;
-      });
-    }); //get the sensor data and set then to the data types
-  }
-
+class CorrectScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // if (x < 9.00) {
@@ -383,37 +364,17 @@ class _CorrectScreenPageState extends State<CorrectScreen> {
     //   });
     // }
 
-    return new Container(
+    return Container(
       decoration: new BoxDecoration(color: Colors.green),
       child: new Center(
         child: new Text("Correct"),
       ),
     );
   }
+
 }
 
-class passedScreen extends StatefulWidget {
-  @override
-  _passedScreenPageState createState() => _passedScreenPageState();
-}
-
-class _passedScreenPageState extends State<passedScreen> {
-  double x;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    accelerometerEvents.listen((AccelerometerEvent event) {
-      setState(() {
-        // x = num.parse(event.x.toStringAsFixed(2));
-        // y = num.parse(event.y.toStringAsFixed(2));
-        // z = num.parse(event.z.toStringAsFixed(2));
-        x = event.x;
-      });
-    }); //get the sensor data and set then to the data types
-  }
-
+class passedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // if (x < 9.00) {
@@ -426,7 +387,7 @@ class _passedScreenPageState extends State<passedScreen> {
     //   });
     // }
 
-    return new Container(
+    return Container(
       decoration: new BoxDecoration(color: Colors.red),
       child: new Center(
         child: new Text(
@@ -438,7 +399,9 @@ class _passedScreenPageState extends State<passedScreen> {
       ),
     );
   }
+
 }
+
 
 //   Widget _buildBody(BuildContext context) {
 //     return StreamBuilder<QuerySnapshot>(
