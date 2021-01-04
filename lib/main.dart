@@ -56,26 +56,28 @@ class MyHomePage extends StatefulWidget {
 // }
 
 class _MyHomePageState extends State<MyHomePage> {
+  AccelerometerEvent event;
+  StreamSubscription accel;
   double x;
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    accelerometerEvents.listen((AccelerometerEvent event) {
+    accel = accelerometerEvents.listen((AccelerometerEvent eve) {
       setState(() {
-        // x = num.parse(event.x.toStringAsFixed(2));
-        // y = num.parse(event.y.toStringAsFixed(2));
-        // z = num.parse(event.z.toStringAsFixed(2));
+        event = eve;
         x = event.x;
       });
-    }); //get the sensor data and set then to the data types
+    });
   }
+
+
 
 
   @override
   Widget build(BuildContext context) {
     if (x >= 9.00) {
+      accel.pause();
       setState(() {
         SchedulerBinding.instance.addPostFrameCallback((_) {
           Navigator.push(
@@ -84,9 +86,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   builder: (BuildContext context) => new CorrectScreen()));
         });
       });
+      Timer(Duration(seconds: 2), () {
+        accel.resume();
+      });
     }
 
     if (x <= -5.00) {
+      accel.pause();
       setState(() {
         SchedulerBinding.instance.addPostFrameCallback((_) {
           Navigator.push(
@@ -94,6 +100,9 @@ class _MyHomePageState extends State<MyHomePage> {
               new MaterialPageRoute(
                   builder: (BuildContext context) => new passedScreen()));
         });
+      });
+      Timer(Duration(seconds: 2), () {
+        accel.resume();
       });
     }
     return Scaffold(
@@ -135,7 +144,7 @@ class CorrectScreen extends StatelessWidget {
     //
     //   });
     // }
-    Timer(Duration(seconds: 2), () {
+    Timer(Duration(seconds: 1), () {
       SchedulerBinding.instance.addPostFrameCallback((_) {
         Navigator.pop(
             context);
@@ -164,7 +173,7 @@ class passedScreen extends StatelessWidget {
     //
     //   });
     // }
-    Timer(Duration(seconds: 2), () {
+    Timer(Duration(seconds: 1), () {
       SchedulerBinding.instance.addPostFrameCallback((_) {
         Navigator.pop(
             context);
