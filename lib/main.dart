@@ -112,34 +112,42 @@ class _firstRouteState extends State<firstRoute> {
       origin_accel.pause();
     });
 
-    if (x >= origin_x + 1 || x >= 10) {
-      accel.pause();
-      setState(() {
-        SchedulerBinding.instance.addPostFrameCallback((_) {
-          Navigator.push(
-              context,
-              new MaterialPageRoute(
-                  builder: (BuildContext context) => new CorrectScreen()));
+    try {
+      if (x >= origin_x + 1 || x >= 10) {
+        accel.pause();
+        setState(() {
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            Navigator.push(
+                context,
+                new MaterialPageRoute(
+                    builder: (BuildContext context) => new CorrectScreen()));
+          });
         });
-      });
-      Timer(Duration(seconds: 2), () {
-        accel.resume();
-      });
+        Timer(Duration(seconds: 2), () {
+          accel.resume();
+        });
+      }
+    } catch (err) {
+      print('Caught error: $err');
     }
 
-    if (x <= origin_x - 1) {
-      accel.pause();
-      setState(() {
-        SchedulerBinding.instance.addPostFrameCallback((_) {
-          Navigator.push(
-              context,
-              new MaterialPageRoute(
-                  builder: (BuildContext context) => new passedScreen()));
+    try{
+      if (x <= origin_x - 2) {
+        accel.pause();
+        setState(() {
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            Navigator.push(
+                context,
+                new MaterialPageRoute(
+                    builder: (BuildContext context) => new passedScreen()));
+          });
         });
-      });
-      Timer(Duration(seconds: 2), () {
-        accel.resume();
-      });
+        Timer(Duration(seconds: 2), () {
+          accel.resume();
+        });
+      }
+    } catch (err) {
+      print('Caught error: $err');
     }
     return Scaffold(
         appBar: AppBar(
@@ -153,6 +161,123 @@ class _firstRouteState extends State<firstRoute> {
                 padding: const EdgeInsets.all(10.0),
                 child: Text(
                   "Sensor Test",
+                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w900),
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(num.parse(x.toStringAsFixed(2)).toStringAsFixed(2),
+                    style: TextStyle(fontSize: 20.0)),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(num.parse(origin_x.toStringAsFixed(2)).toStringAsFixed(2),
+                    style: TextStyle(fontSize: 20.0)),
+              )
+            ],
+          ),
+        ));
+  }
+}
+
+class secondRoute extends StatefulWidget {
+  @override
+  _secondRouteState createState() => _secondRouteState();
+}
+
+// class MyHomePage extends StatefulWidget {
+//   @override
+//   _MyHomePageState createState() {
+//     return _MyHomePageState();
+//   }
+// }
+
+class _secondRouteState extends State<secondRoute> {
+  AccelerometerEvent event;
+  AccelerometerEvent origin_event;
+  StreamSubscription accel;
+  StreamSubscription origin_accel;
+  double x;
+  double origin_x;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    accel = accelerometerEvents.listen((AccelerometerEvent eve) {
+      setState(() {
+        event = eve;
+        x = event.x;
+      });
+    });
+    origin_accel = accelerometerEvents.listen((AccelerometerEvent eve) {
+      setState(() {
+        origin_event = eve;
+        origin_x = origin_event.x;
+      });
+    });
+
+  }
+
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    Timer(Duration(seconds: 2), () {
+      origin_accel.pause();
+    });
+
+    try {
+      if (x >= origin_x + 1 || x >= 10) {
+        accel.pause();
+        setState(() {
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            Navigator.push(
+                context,
+                new MaterialPageRoute(
+                    builder: (BuildContext context) => new CorrectScreen()));
+          });
+        });
+        Timer(Duration(seconds: 2), () {
+          accel.resume();
+        });
+      }
+    } catch (err) {
+      print('Caught error: $err');
+    }
+
+    try{
+      if (x <= origin_x - 2) {
+        accel.pause();
+        setState(() {
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            Navigator.push(
+                context,
+                new MaterialPageRoute(
+                    builder: (BuildContext context) => new passedScreen()));
+          });
+        });
+        Timer(Duration(seconds: 2), () {
+          accel.resume();
+        });
+      }
+    } catch (err) {
+      print('Caught error: $err');
+    }
+
+    return Scaffold(
+        appBar: AppBar(
+          title: Text("Page 2"),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Text(
+                  "Second Page Test",
                   style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w900),
                 ),
               ),
