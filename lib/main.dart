@@ -123,8 +123,21 @@ class _firstRouteState extends State<firstRoute> {
                     builder: (BuildContext context) => new CorrectScreen()));
           });
         });
-        Timer(Duration(seconds: 2), () {
+        Timer(Duration(seconds: 3), () {
           accel.resume();
+          setState(() {
+            SchedulerBinding.instance.addPostFrameCallback((_) {
+              Navigator.push(
+                  context,
+                  new MaterialPageRoute(
+                      builder: (BuildContext context) => new secondRoute()));
+            });
+          });
+          Timer(Duration(seconds: 2), () {
+            accel.cancel();
+            origin_accel.cancel();
+          });
+
         });
       }
     } catch (err) {
@@ -149,35 +162,41 @@ class _firstRouteState extends State<firstRoute> {
     } catch (err) {
       print('Caught error: $err');
     }
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("Flutter Sensor Library"),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Text(
-                  "Sensor Test",
-                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w900),
-                ),
-              ),
-
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(num.parse(x.toStringAsFixed(2)).toStringAsFixed(2),
-                    style: TextStyle(fontSize: 20.0)),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(num.parse(origin_x.toStringAsFixed(2)).toStringAsFixed(2),
-                    style: TextStyle(fontSize: 20.0)),
-              )
-            ],
+    try{
+      return Scaffold(
+          appBar: AppBar(
+            title: Text("Flutter Sensor Library"),
           ),
-        ));
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Text(
+                    "Sensor Test",
+                    style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w900),
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(num.parse(x.toStringAsFixed(2)).toStringAsFixed(2),
+                      style: TextStyle(fontSize: 20.0)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(num.parse(origin_x.toStringAsFixed(2)).toStringAsFixed(2),
+                      style: TextStyle(fontSize: 20.0)),
+                )
+              ],
+            ),
+          ));
+    }catch (err) {
+      print('Caught error: $err');
+      return Container();
+    }
+
   }
 }
 
@@ -265,36 +284,42 @@ class _secondRouteState extends State<secondRoute> {
     } catch (err) {
       print('Caught error: $err');
     }
-
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("Page 2"),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Text(
-                  "Second Page Test",
-                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w900),
-                ),
-              ),
-
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(num.parse(x.toStringAsFixed(2)).toStringAsFixed(2),
-                    style: TextStyle(fontSize: 20.0)),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(num.parse(origin_x.toStringAsFixed(2)).toStringAsFixed(2),
-                    style: TextStyle(fontSize: 20.0)),
-              )
-            ],
+    try{
+      return Scaffold(
+          appBar: AppBar(
+            title: Text("Second Page"),
+            automaticallyImplyLeading: false,
           ),
-        ));
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Text(
+                    "Second Page Test",
+                    style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w900),
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(num.parse(x.toStringAsFixed(2)).toStringAsFixed(2),
+                      style: TextStyle(fontSize: 20.0)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(num.parse(origin_x.toStringAsFixed(2)).toStringAsFixed(2),
+                      style: TextStyle(fontSize: 20.0)),
+                )
+              ],
+            ),
+          ));
+    }catch (err) {
+      print('Caught error: $err');
+      return Container();
+    }
+
   }
 }
 
