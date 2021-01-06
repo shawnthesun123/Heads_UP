@@ -339,6 +339,7 @@ class _secondRouteState extends State<secondRoute> {
 
 class thirdRoute extends StatefulWidget {
   @override
+
   _thirdRouteState createState() => _thirdRouteState();
 }
 class _thirdRouteState extends State<thirdRoute> {
@@ -348,6 +349,10 @@ class _thirdRouteState extends State<thirdRoute> {
   StreamSubscription origin_accel;
   double x;
   double origin_x;
+  var r;
+  String randomNum;
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -364,7 +369,9 @@ class _thirdRouteState extends State<thirdRoute> {
         origin_x = origin_event.x;
       });
     });
-
+    Random rnd = new Random();
+    var r = 1 + rnd.nextInt(2);
+    randomNum = r.toString();
   }
 
 
@@ -424,7 +431,7 @@ class _thirdRouteState extends State<thirdRoute> {
       print('Caught error: $err');
     }
     return new StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('baby').doc('1').snapshots(),
+        stream: FirebaseFirestore.instance.collection('baby').doc(randomNum).snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Scaffold(
