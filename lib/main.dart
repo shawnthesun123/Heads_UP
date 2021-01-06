@@ -8,13 +8,14 @@ import 'package:flutter/scheduler.dart';
 import 'package:sensors/sensors.dart';
 
 import 'dart:async';
+import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(
-    MyApp(),
-  );
+  SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft,DeviceOrientation.landscapeRight]).then((_){
+    runApp(MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -42,10 +43,31 @@ class MyApp extends StatelessWidget {
 // }
 
 
-
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatelessWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('First Route'),
+      ),
+      body: Center(
+        child: RaisedButton(
+          child: Text('Press to Play'),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => firstRoute()),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class firstRoute extends StatefulWidget {
+  @override
+  _firstRouteState createState() => _firstRouteState();
 }
 
 // class MyHomePage extends StatefulWidget {
@@ -55,10 +77,13 @@ class MyHomePage extends StatefulWidget {
 //   }
 // }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _firstRouteState extends State<firstRoute> {
   AccelerometerEvent event;
+  AccelerometerEvent origin_event;
   StreamSubscription accel;
+  StreamSubscription origin_accel;
   double x;
+  double origin_x;
   @override
   void initState() {
     // TODO: implement initState
@@ -69,6 +94,13 @@ class _MyHomePageState extends State<MyHomePage> {
         x = event.x;
       });
     });
+    origin_accel = accelerometerEvents.listen((AccelerometerEvent eve) {
+      setState(() {
+        origin_event = eve;
+        origin_x = origin_event.x;
+      });
+    });
+
   }
 
 
@@ -76,7 +108,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (x >= 9.00) {
+    Timer(Duration(seconds: 2), () {
+      origin_accel.pause();
+    });
+
+    if (x >= origin_x + 1 || x >= 10) {
       accel.pause();
       setState(() {
         SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -91,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     }
 
-    if (x <= -5.00) {
+    if (x <= origin_x - 1) {
       accel.pause();
       setState(() {
         SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -124,6 +160,11 @@ class _MyHomePageState extends State<MyHomePage> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(num.parse(x.toStringAsFixed(2)).toStringAsFixed(2),
+                    style: TextStyle(fontSize: 20.0)),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(num.parse(origin_x.toStringAsFixed(2)).toStringAsFixed(2),
                     style: TextStyle(fontSize: 20.0)),
               )
             ],
