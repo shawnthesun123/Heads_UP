@@ -166,6 +166,7 @@ class _firstRouteState extends State<firstRoute> {
       return Scaffold(
           appBar: AppBar(
             title: Text("Flutter Sensor Library"),
+            automaticallyImplyLeading: false,
           ),
           body: Center(
             child: Column(
@@ -260,6 +261,18 @@ class _secondRouteState extends State<secondRoute> {
         });
         Timer(Duration(seconds: 2), () {
           accel.resume();
+          setState(() {
+            SchedulerBinding.instance.addPostFrameCallback((_) {
+              Navigator.push(
+                  context,
+                  new MaterialPageRoute(
+                      builder: (BuildContext context) => new thirdRoute()));
+            });
+          });
+          Timer(Duration(seconds: 2), () {
+            accel.cancel();
+            origin_accel.cancel();
+          });
         });
       }
     } catch (err) {
@@ -322,6 +335,60 @@ class _secondRouteState extends State<secondRoute> {
 
   }
 }
+
+class thirdRoute extends StatefulWidget {
+  @override
+  _thirdRouteState createState() => _thirdRouteState();
+}
+class _thirdRouteState extends State<thirdRoute> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Baby Name Votes'), automaticallyImplyLeading: false,),
+
+      body: _buildBody(context),
+    );
+  }
+  Widget _buildBody(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('baby').snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return LinearProgressIndicator();
+
+        return _buildList(context, snapshot.data.docs);
+      },
+    );
+  }
+
+  Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
+    return ListView(
+      padding: const EdgeInsets.only(top: 20.0),
+      children: snapshot.map((data) => _buildListItem(context, data)).toList(),
+    );
+  }
+
+  Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
+    final record = Record.fromSnapshot(data);
+
+    return Padding(
+      key: ValueKey(record.name),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.circular(5.0),
+        ),
+        child: ListTile(
+          title: Text(record.name),
+          trailing: Text(record.votes.toString()),
+          onTap: () => record.reference.update({'votes': FieldValue.increment(1)}),       ),
+      ),
+    );
+  }
+}
+
+
+
 
 class CorrectScreen extends StatelessWidget {
   @override
@@ -389,7 +456,7 @@ class passedScreen extends StatelessWidget {
 
 class Record {
   final String name;
-  final double votes;
+  final int votes;
   final DocumentReference reference;
 
   Record.fromMap(Map<String, dynamic> map, {this.reference})
@@ -400,7 +467,6 @@ class Record {
 
   Record.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data(), reference: snapshot.reference);
-
   @override
   String toString() => "Record<$name:$votes>";
 }
