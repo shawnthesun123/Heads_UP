@@ -342,10 +342,89 @@ class thirdRoute extends StatefulWidget {
   _thirdRouteState createState() => _thirdRouteState();
 }
 class _thirdRouteState extends State<thirdRoute> {
+  AccelerometerEvent event;
+  AccelerometerEvent origin_event;
+  StreamSubscription accel;
+  StreamSubscription origin_accel;
+  double x;
+  double origin_x;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    accel = accelerometerEvents.listen((AccelerometerEvent eve) {
+      setState(() {
+        event = eve;
+        x = event.x;
+      });
+    });
+    origin_accel = accelerometerEvents.listen((AccelerometerEvent eve) {
+      setState(() {
+        origin_event = eve;
+        origin_x = origin_event.x;
+      });
+    });
+
+  }
+
+
 
   Widget build(BuildContext context) {
+    Timer(Duration(seconds: 2), () {
+      origin_accel.pause();
+    });
+
+    try {
+      if (x >= origin_x + 1 || x >= 10) {
+        accel.pause();
+        setState(() {
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            Navigator.push(
+                context,
+                new MaterialPageRoute(
+                    builder: (BuildContext context) => new CorrectScreen()));
+          });
+        });
+        Timer(Duration(seconds: 2), () {
+          accel.resume();
+          // setState(() {
+          //   SchedulerBinding.instance.addPostFrameCallback((_) {
+          //     Navigator.push(
+          //         context,
+          //         new MaterialPageRoute(
+          //             builder: (BuildContext context) => new thirdRoute()));
+          //   });
+          // });
+          // Timer(Duration(seconds: 2), () {
+          //   accel.cancel();
+          //   origin_accel.cancel();
+          // });
+        });
+      }
+    } catch (err) {
+      print('Caught error: $err');
+    }
+
+    try{
+      if (x <= origin_x - 2) {
+        accel.pause();
+        setState(() {
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            Navigator.push(
+                context,
+                new MaterialPageRoute(
+                    builder: (BuildContext context) => new passedScreen()));
+          });
+        });
+        Timer(Duration(seconds: 2), () {
+          accel.resume();
+        });
+      }
+    } catch (err) {
+      print('Caught error: $err');
+    }
     return new StreamBuilder(
-        stream: Firestore.instance.collection('baby').document('1').snapshots(),
+        stream: FirebaseFirestore.instance.collection('baby').doc('1').snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Scaffold(
