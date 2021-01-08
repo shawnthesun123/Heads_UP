@@ -57,6 +57,7 @@ class MyHomePage extends StatelessWidget {
         child: RaisedButton(
           child: Text('Press to Play'),
           onPressed: () {
+            FirebaseFirestore.instance.collection('users').doc('user1').update({'score': 0});
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => firstRoute()),
