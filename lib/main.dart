@@ -14,7 +14,9 @@ import 'dart:math';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft,DeviceOrientation.landscapeRight]).then((_){
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight])
+      .then((_) {
     runApp(MyApp());
   });
 }
@@ -85,6 +87,10 @@ class _firstRouteState extends State<firstRoute> {
   StreamSubscription origin_accel;
   double x;
   double origin_x;
+  var r;
+  String randomNum;
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -101,20 +107,21 @@ class _firstRouteState extends State<firstRoute> {
         origin_x = origin_event.x;
       });
     });
-
+    Random rnd = new Random();
+    var r = 1 + rnd.nextInt(9);
+    randomNum = r.toString();
   }
-
-
 
 
   @override
   Widget build(BuildContext context) {
-    Timer(Duration(seconds: 2), () {
+    Timer(Duration(seconds: 1), () {
       origin_accel.pause();
     });
 
     try {
-      if (x >= origin_x + 1 || x >= 10) {
+      if (x >= origin_x + 1 ) {
+        FirebaseFirestore.instance.collection('users').doc('user1').update({'score': FieldValue.increment(1)});
         accel.pause();
         setState(() {
           SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -138,14 +145,13 @@ class _firstRouteState extends State<firstRoute> {
             accel.cancel();
             origin_accel.cancel();
           });
-
         });
       }
     } catch (err) {
       print('Caught error: $err');
     }
 
-    try{
+    try {
       if (x <= origin_x - 2) {
         accel.pause();
         setState(() {
@@ -158,47 +164,122 @@ class _firstRouteState extends State<firstRoute> {
         });
         Timer(Duration(seconds: 2), () {
           accel.resume();
+          setState(() {
+            SchedulerBinding.instance.addPostFrameCallback((_) {
+              Navigator.push(
+                  context,
+                  new MaterialPageRoute(
+                      builder: (BuildContext context) => new secondRoute()));
+            });
+          });
+          Timer(Duration(seconds: 2), () {
+            accel.cancel();
+            origin_accel.cancel();
+          });
         });
       }
     } catch (err) {
       print('Caught error: $err');
     }
-    try{
-      return Scaffold(
-          appBar: AppBar(
-            title: Text("Flutter Sensor Library"),
-            automaticallyImplyLeading: false,
-          ),
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text(
-                    "Sensor Test",
-                    style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w900),
+    return new StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('baby')
+            .doc(randomNum)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Scaffold(
+                appBar: AppBar(
+                  title: Text("First Page"),
+                  automaticallyImplyLeading: false,
+                ),
+                body: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                          "Loading",
+                          style: TextStyle(
+                              fontSize: 18.0, fontWeight: FontWeight.w900),
+                        ),
+                      ),
+                    ],
                   ),
+                ));
+          }
+          var userDocument = snapshot.data;
+          try {
+            return Scaffold(
+                appBar: AppBar(
+                  title: Text("Third Page"),
+                  automaticallyImplyLeading: false,
                 ),
+                body: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                          "Third Page Test",
+                          style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w900),
+                        ),
+                      ),
 
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(num.parse(x.toStringAsFixed(2)).toStringAsFixed(2),
-                      style: TextStyle(fontSize: 20.0)),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(num.parse(origin_x.toStringAsFixed(2)).toStringAsFixed(2),
-                      style: TextStyle(fontSize: 20.0)),
-                )
-              ],
-            ),
-          ));
-    }catch (err) {
-      print('Caught error: $err');
-      return Container();
-    }
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(num.parse(x.toStringAsFixed(2)).toStringAsFixed(2),
+                            style: TextStyle(fontSize: 20.0)),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                            num.parse(origin_x.toStringAsFixed(2)).toStringAsFixed(2),
+                            style: TextStyle(fontSize: 20.0)),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                          userDocument["text"],
+                          style: TextStyle(fontSize: 18.0,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.black),
 
+                        ),
+                      )],
+                  ),
+                ));
+          }catch (err) {
+            print('Caught error: $err');
+            return Container();
+          }
+          // return Scaffold(
+          // appBar: AppBar(
+          // title: Text("Third Page"),
+          // automaticallyImplyLeading: false,
+          // ),
+          // body: Center(
+          // child: Column(
+          // mainAxisAlignment: MainAxisAlignment.center,
+          // children: <Widget>[
+          // Padding(
+          // padding: const EdgeInsets.all(10.0),
+          // child: Text(
+          // userDocument["text"],
+          // style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w900, color: Colors.black),
+          //
+          // ),
+          // ),
+          // ]
+          // ,
+          // )
+          // ,
+          // )
+          // );
+          // // return new Text(userDocument["text"]);
+        }
+    );
   }
 }
 
@@ -221,6 +302,10 @@ class _secondRouteState extends State<secondRoute> {
   StreamSubscription origin_accel;
   double x;
   double origin_x;
+  var r;
+  String randomNum;
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -237,20 +322,21 @@ class _secondRouteState extends State<secondRoute> {
         origin_x = origin_event.x;
       });
     });
-
+    Random rnd = new Random();
+    var r = 1 + rnd.nextInt(9);
+    randomNum = r.toString();
   }
-
-
 
 
   @override
   Widget build(BuildContext context) {
-    Timer(Duration(seconds: 2), () {
+    Timer(Duration(seconds: 1), () {
       origin_accel.pause();
     });
 
     try {
-      if (x >= origin_x + 1 || x >= 10) {
+      if (x >= origin_x + 1) {
+        FirebaseFirestore.instance.collection('users').doc('user1').update({'score': FieldValue.increment(1)});
         accel.pause();
         setState(() {
           SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -280,7 +366,7 @@ class _secondRouteState extends State<secondRoute> {
       print('Caught error: $err');
     }
 
-    try{
+    try {
       if (x <= origin_x - 2) {
         accel.pause();
         setState(() {
@@ -298,50 +384,113 @@ class _secondRouteState extends State<secondRoute> {
     } catch (err) {
       print('Caught error: $err');
     }
-    try{
-      return Scaffold(
-          appBar: AppBar(
-            title: Text("Second Page"),
-            automaticallyImplyLeading: false,
-          ),
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text(
-                    "Second Page Test",
-                    style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w900),
+    return new StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('baby')
+            .doc(randomNum)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Scaffold(
+                appBar: AppBar(
+                  title: Text("Second Page"),
+                  automaticallyImplyLeading: false,
+                ),
+                body: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                          "Loading",
+                          style: TextStyle(
+                              fontSize: 18.0, fontWeight: FontWeight.w900),
+                        ),
+                      ),
+                    ],
                   ),
+                ));
+          }
+          var userDocument = snapshot.data;
+          try {
+            return Scaffold(
+                appBar: AppBar(
+                  title: Text("Second Page"),
+                  automaticallyImplyLeading: false,
                 ),
+                body: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                          "Second Page Test",
+                          style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w900),
+                        ),
+                      ),
 
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(num.parse(x.toStringAsFixed(2)).toStringAsFixed(2),
-                      style: TextStyle(fontSize: 20.0)),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(num.parse(origin_x.toStringAsFixed(2)).toStringAsFixed(2),
-                      style: TextStyle(fontSize: 20.0)),
-                )
-              ],
-            ),
-          ));
-    }catch (err) {
-      print('Caught error: $err');
-      return Container();
-    }
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(num.parse(x.toStringAsFixed(2)).toStringAsFixed(2),
+                            style: TextStyle(fontSize: 20.0)),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                            num.parse(origin_x.toStringAsFixed(2)).toStringAsFixed(2),
+                            style: TextStyle(fontSize: 20.0)),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                          userDocument["text"],
+                          style: TextStyle(fontSize: 18.0,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.black),
 
+                        ),
+                      )],
+                  ),
+                ));
+          }catch (err) {
+            print('Caught error: $err');
+            return Container();
+          }
+          // return Scaffold(
+          // appBar: AppBar(
+          // title: Text("Third Page"),
+          // automaticallyImplyLeading: false,
+          // ),
+          // body: Center(
+          // child: Column(
+          // mainAxisAlignment: MainAxisAlignment.center,
+          // children: <Widget>[
+          // Padding(
+          // padding: const EdgeInsets.all(10.0),
+          // child: Text(
+          // userDocument["text"],
+          // style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w900, color: Colors.black),
+          //
+          // ),
+          // ),
+          // ]
+          // ,
+          // )
+          // ,
+          // )
+          // );
+          // // return new Text(userDocument["text"]);
+        }
+    );
   }
 }
 
 class thirdRoute extends StatefulWidget {
   @override
-
   _thirdRouteState createState() => _thirdRouteState();
 }
+
 class _thirdRouteState extends State<thirdRoute> {
   AccelerometerEvent event;
   AccelerometerEvent origin_event;
@@ -351,7 +500,6 @@ class _thirdRouteState extends State<thirdRoute> {
   double origin_x;
   var r;
   String randomNum;
-
 
   @override
   void initState() {
@@ -370,19 +518,18 @@ class _thirdRouteState extends State<thirdRoute> {
       });
     });
     Random rnd = new Random();
-    var r = 1 + rnd.nextInt(2);
+    var r = 1 + rnd.nextInt(9);
     randomNum = r.toString();
   }
 
-
-
   Widget build(BuildContext context) {
-    Timer(Duration(seconds: 2), () {
+    Timer(Duration(seconds: 1), () {
       origin_accel.pause();
     });
 
     try {
-      if (x >= origin_x + 1 || x >= 10) {
+      if (x >= origin_x + 1) {
+        FirebaseFirestore.instance.collection('users').doc('user1').update({'score': FieldValue.increment(1)});
         accel.pause();
         setState(() {
           SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -412,7 +559,7 @@ class _thirdRouteState extends State<thirdRoute> {
       print('Caught error: $err');
     }
 
-    try{
+    try {
       if (x <= origin_x - 2) {
         accel.pause();
         setState(() {
@@ -431,59 +578,103 @@ class _thirdRouteState extends State<thirdRoute> {
       print('Caught error: $err');
     }
     return new StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('baby').doc(randomNum).snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Scaffold(
-                appBar: AppBar(
-                  title: Text("Third Page"),
-                  automaticallyImplyLeading: false,
-                ),
-                body: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Text(
-                          "Loading",
-                          style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w900),
-                        ),
-                      ),
-                    ],
-                  ),
-                ));
-          }
-          var userDocument = snapshot.data;
-          return Scaffold(
-              appBar: AppBar(
-                title: Text("Third Page"),
-                automaticallyImplyLeading: false,
-              ),
-              body: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Text(
-                        userDocument["text"],
-                        style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w900, color: Colors.black),
-
-                      ),
+        stream: FirebaseFirestore.instance.collection('baby')
+            .doc(randomNum)
+            .snapshots(),
+        builder: (context, snapshot1) {
+          return StreamBuilder(
+            stream: FirebaseFirestore.instance.collection('users')
+                .doc('user1')
+                .snapshots(),
+            builder: (context, snapshot2){
+              if (!snapshot1.hasData || !snapshot2.hasData) {
+                return Scaffold(
+                    appBar: AppBar(
+                      title: Text("Third Page"),
+                      automaticallyImplyLeading: false,
                     ),
-                  ],
-                ),
-              ));
-          // return new Text(userDocument["text"]);
+                    body: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text(
+                              "Loading",
+                              style: TextStyle(
+                                  fontSize: 18.0, fontWeight: FontWeight.w900),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ));
+              }
+              var userDocument = snapshot1.data;
+              var usersDocument = snapshot2.data;
+              try {
+                return Scaffold(
+                    appBar: AppBar(
+                      title: Text("Third Page"),
+                      automaticallyImplyLeading: false,
+                    ),
+                    body: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text(
+                              "Third Page Test",
+                              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w900),
+                            ),
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(num.parse(x.toStringAsFixed(2)).toStringAsFixed(2),
+                                style: TextStyle(fontSize: 20.0)),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                                num.parse(origin_x.toStringAsFixed(2)).toStringAsFixed(2),
+                                style: TextStyle(fontSize: 20.0)),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text(
+                              userDocument["text"],
+                              style: TextStyle(fontSize: 18.0,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.black),
+
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text(
+                              "Score: ${usersDocument["score"].toString()}" ,
+                              style: TextStyle(fontSize: 18.0,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.black),
+
+                            ),
+
+                          )],
+                      ),
+                    ));
+              }catch (err) {
+                print('Caught error: $err');
+                return Container();
+              }
+            }
+          );
         }
     );
   }
 
 
 }
-
-
 
 
 class CorrectScreen extends StatelessWidget {
@@ -549,3 +740,20 @@ class passedScreen extends StatelessWidget {
 }
 
 
+class Record {
+  final String name;
+  final int score;
+  final DocumentReference reference;
+
+  Record.fromMap(Map<String, dynamic> map, {this.reference})
+      : assert(map['name'] != null),
+        assert(map['votes'] != null),
+        name = map['name'],
+        score = map['score'];
+
+  Record.fromSnapshot(DocumentSnapshot snapshot)
+      : this.fromMap(snapshot.data(), reference: snapshot.reference);
+
+  @override
+  String toString() => "Record<$name:$score>";
+}
