@@ -185,99 +185,94 @@ class _firstRouteState extends State<firstRoute> {
         stream: FirebaseFirestore.instance.collection('baby')
             .doc(randomNum)
             .snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Scaffold(
-                appBar: AppBar(
-                  title: Text("First Page"),
-                  automaticallyImplyLeading: false,
-                ),
-                body: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Text(
-                          "Loading",
-                          style: TextStyle(
-                              fontSize: 18.0, fontWeight: FontWeight.w900),
-                        ),
+        builder: (context, snapshot1) {
+          return StreamBuilder(
+              stream: FirebaseFirestore.instance.collection('users')
+                  .doc('user1')
+                  .snapshots(),
+              builder: (context, snapshot2){
+                if (!snapshot1.hasData || !snapshot2.hasData) {
+                  return Scaffold(
+                      appBar: AppBar(
+                        title: Text("First Page"),
+                        automaticallyImplyLeading: false,
                       ),
-                    ],
-                  ),
-                ));
-          }
-          var userDocument = snapshot.data;
-          try {
-            return Scaffold(
-                appBar: AppBar(
-                  title: Text("Third Page"),
-                  automaticallyImplyLeading: false,
-                ),
-                body: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Text(
-                          "Third Page Test",
-                          style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w900),
+                      body: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text(
+                                "Loading",
+                                style: TextStyle(
+                                    fontSize: 18.0, fontWeight: FontWeight.w900),
+                              ),
+                            ),
+                          ],
                         ),
+                      ));
+                }
+                var userDocument = snapshot1.data;
+                var usersDocument = snapshot2.data;
+                try {
+                  return Scaffold(
+                      appBar: AppBar(
+                        title: Text("First Page"),
+                        automaticallyImplyLeading: false,
                       ),
+                      body: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text(
+                                "First Page Test",
+                                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w900),
+                              ),
+                            ),
 
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(num.parse(x.toStringAsFixed(2)).toStringAsFixed(2),
-                            style: TextStyle(fontSize: 20.0)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                            num.parse(origin_x.toStringAsFixed(2)).toStringAsFixed(2),
-                            style: TextStyle(fontSize: 20.0)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Text(
-                          userDocument["text"],
-                          style: TextStyle(fontSize: 18.0,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.black),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(num.parse(x.toStringAsFixed(2)).toStringAsFixed(2),
+                                  style: TextStyle(fontSize: 20.0)),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                  num.parse(origin_x.toStringAsFixed(2)).toStringAsFixed(2),
+                                  style: TextStyle(fontSize: 20.0)),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text(
+                                userDocument["text"],
+                                style: TextStyle(fontSize: 18.0,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.black),
 
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text(
+                                "Score: ${usersDocument["score"].toString()}" ,
+                                style: TextStyle(fontSize: 18.0,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.black),
+
+                              ),
+
+                            )],
                         ),
-                      )],
-                  ),
-                ));
-          }catch (err) {
-            print('Caught error: $err');
-            return Container();
-          }
-          // return Scaffold(
-          // appBar: AppBar(
-          // title: Text("Third Page"),
-          // automaticallyImplyLeading: false,
-          // ),
-          // body: Center(
-          // child: Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          // children: <Widget>[
-          // Padding(
-          // padding: const EdgeInsets.all(10.0),
-          // child: Text(
-          // userDocument["text"],
-          // style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w900, color: Colors.black),
-          //
-          // ),
-          // ),
-          // ]
-          // ,
-          // )
-          // ,
-          // )
-          // );
-          // // return new Text(userDocument["text"]);
+                      ));
+                }catch (err) {
+                  print('Caught error: $err');
+                  return Container();
+                }
+              }
+          );
         }
     );
   }
@@ -388,99 +383,94 @@ class _secondRouteState extends State<secondRoute> {
         stream: FirebaseFirestore.instance.collection('baby')
             .doc(randomNum)
             .snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Scaffold(
-                appBar: AppBar(
-                  title: Text("Second Page"),
-                  automaticallyImplyLeading: false,
-                ),
-                body: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Text(
-                          "Loading",
-                          style: TextStyle(
-                              fontSize: 18.0, fontWeight: FontWeight.w900),
-                        ),
+        builder: (context, snapshot1) {
+          return StreamBuilder(
+              stream: FirebaseFirestore.instance.collection('users')
+                  .doc('user1')
+                  .snapshots(),
+              builder: (context, snapshot2){
+                if (!snapshot1.hasData || !snapshot2.hasData) {
+                  return Scaffold(
+                      appBar: AppBar(
+                        title: Text("Second Page"),
+                        automaticallyImplyLeading: false,
                       ),
-                    ],
-                  ),
-                ));
-          }
-          var userDocument = snapshot.data;
-          try {
-            return Scaffold(
-                appBar: AppBar(
-                  title: Text("Second Page"),
-                  automaticallyImplyLeading: false,
-                ),
-                body: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Text(
-                          "Second Page Test",
-                          style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w900),
+                      body: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text(
+                                "Loading",
+                                style: TextStyle(
+                                    fontSize: 18.0, fontWeight: FontWeight.w900),
+                              ),
+                            ),
+                          ],
                         ),
+                      ));
+                }
+                var userDocument = snapshot1.data;
+                var usersDocument = snapshot2.data;
+                try {
+                  return Scaffold(
+                      appBar: AppBar(
+                        title: Text("Second Page"),
+                        automaticallyImplyLeading: false,
                       ),
+                      body: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text(
+                                "Second Page Test",
+                                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w900),
+                              ),
+                            ),
 
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(num.parse(x.toStringAsFixed(2)).toStringAsFixed(2),
-                            style: TextStyle(fontSize: 20.0)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                            num.parse(origin_x.toStringAsFixed(2)).toStringAsFixed(2),
-                            style: TextStyle(fontSize: 20.0)),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Text(
-                          userDocument["text"],
-                          style: TextStyle(fontSize: 18.0,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.black),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(num.parse(x.toStringAsFixed(2)).toStringAsFixed(2),
+                                  style: TextStyle(fontSize: 20.0)),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                  num.parse(origin_x.toStringAsFixed(2)).toStringAsFixed(2),
+                                  style: TextStyle(fontSize: 20.0)),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text(
+                                userDocument["text"],
+                                style: TextStyle(fontSize: 18.0,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.black),
 
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text(
+                                "Score: ${usersDocument["score"].toString()}" ,
+                                style: TextStyle(fontSize: 18.0,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.black),
+
+                              ),
+
+                            )],
                         ),
-                      )],
-                  ),
-                ));
-          }catch (err) {
-            print('Caught error: $err');
-            return Container();
-          }
-          // return Scaffold(
-          // appBar: AppBar(
-          // title: Text("Third Page"),
-          // automaticallyImplyLeading: false,
-          // ),
-          // body: Center(
-          // child: Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          // children: <Widget>[
-          // Padding(
-          // padding: const EdgeInsets.all(10.0),
-          // child: Text(
-          // userDocument["text"],
-          // style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w900, color: Colors.black),
-          //
-          // ),
-          // ),
-          // ]
-          // ,
-          // )
-          // ,
-          // )
-          // );
-          // // return new Text(userDocument["text"]);
+                      ));
+                }catch (err) {
+                  print('Caught error: $err');
+                  return Container();
+                }
+              }
+          );
         }
     );
   }
